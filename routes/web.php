@@ -8,6 +8,7 @@ use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\FulfilmentTypeController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AdminComplaintController;
+use App\Http\Controllers\Api\ReviewController;
 use App\Http\Controllers\GoogleController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
@@ -41,6 +42,7 @@ use App\Http\Controllers\IssueTypeController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DistributionController;
 use App\Http\Controllers\PublicComplaintController;
+use App\Http\Controllers\QrResourceController;
 
 Illuminate\Support\Facades\Auth::routes();
 
@@ -211,8 +213,6 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'web']], function ()
             Route::get('logs', [OnDemandListingController::class, 'logs'])->name('on-demand.logs');
         }
     );
-
-
 
     /**
      * Image
@@ -614,7 +614,31 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'web']], function ()
                 ->name('enquiries.export');
         }
     );
+
+    Route::resource('qr-resource', QrResourceController::class);
+
+    Route::get('download-qr-resource', [QrResourceController::class, 'downloadSingleQR'])
+        ->name('qr-resource.single.download');
+
+    Route::get('qr-codes/{id}/download', [QrResourceController::class, 'download'])
+        ->name('qr-resource.download');
+
+    Route::get('review', [ReviewController::class, 'index'])
+        ->name('review.index');
+
+    Route::post('/review/{reviewUser}/status', [
+        ReviewController::class,
+        'updateStatus'
+    ])->name('review.status');
+
+    Route::delete(
+        '/reviews/{reviewUser}',
+        [ReviewController::class, 'destroy']
+    )->name('review.destroy');
 });
+
+Route::get('qr/{slug}', [QrResourceController::class, 'redirect'])
+    ->name('qr-resource.redirect');
 
 Route::get('authorised-distributor', [DistributionController::class, 'index'])
     ->name('distribution.index');
@@ -649,6 +673,8 @@ Route::get('/assets/images/brand/{filename}', UserController::class)
 
 Route::get('', [HomeController::class, 'index'])
     ->name('home');
+
+
 
 Route::match(['get', 'post'], 'price/calculation', [UserController::class, 'priceCalculation'])
     ->name('price.calculation');

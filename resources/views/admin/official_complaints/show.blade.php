@@ -5,12 +5,6 @@
 @section('content')
 <div class="row mt-4 p-4">
     <div class="col-12">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h3 class="fw-bold mb-0">OFFICIAL COMPLAINT DETAILS</h3>
-            <a href="{{ route('admin.official-complaints.index') }}" class="btn btn-secondary rounded-pill px-4">
-                <i class="fas fa-arrow-left me-1"></i> BACK TO DASHBOARD
-            </a>
-        </div>
 
         <!-- Complaint Main Details -->
         <div class="card custom-card shadow-sm border-0 mb-4" style="border-radius: 15px;">
@@ -42,42 +36,79 @@
             </div>
             <div class="card-body p-4">
                 <div class="row mb-4">
-                    <div class="col-md-3">
+                    <div class='col-md-2'>
+                        <p class="text-muted mb-1 small text-uppercase fw-bold">Title:</p>
+                        <h5 class="fw-bold">{{ $complaint->title }}</h5>
+                    </div>
+                    <div class="col-md-2">
                         <p class="text-muted mb-1 small text-uppercase fw-bold">Created By:</p>
                         <h6 class="fw-bold">{{ $complaint->user->name }}</h6>
                         <small class="text-muted">{{ $complaint->user->email }}</small>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-2">
                         <p class="text-muted mb-1 small text-uppercase fw-bold">Created Date:</p>
                         <h6 class="fw-bold">{{ $complaint->created_at->format('d M, Y h:i A') }}</h6>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-2">
                         <p class="text-muted mb-1 small text-uppercase fw-bold">Department:</p>
                         <h6 class="fw-bold text-info">{{ $complaint->department->name }}</h6>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-2">
                         <p class="text-muted mb-1 small text-uppercase fw-bold">Issue Type:</p>
                         <h6 class="fw-bold text-info">{{ $complaint->issueType->name }}</h6>
                     </div>
                 </div>
 
                 <div class="row mb-4">
-                    <div class="col-md-3">
+                    <div class="col-md-2">
                         <p class="text-muted mb-1 small text-uppercase fw-bold">Managed By:</p>
                         <h6 class="fw-bold text-primary text-uppercase">{{ $complaint->managed_by }}</h6>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-2">
                         <p class="text-muted mb-1 small text-uppercase fw-bold">Delivery Timeline:</p>
                         <h6 class="fw-bold text-warning">{{ $complaint->delivery_timeline }} {{
                             $complaint->delivery_timeline == 1 ? 'Day' : 'Days' }}</h6>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-2">
                         <p class="text-muted mb-1 small text-uppercase fw-bold">Specific Tag:</p>
                         <h6 class="fw-bold">{{ $complaint->specific_tag ? 'YES' : 'NO' }}</h6>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-2">
                         <p class="text-muted mb-1 small text-uppercase fw-bold">Email Notification:</p>
                         <h6 class="fw-bold">{{ $complaint->send_mail ? 'ENABLED' : 'DISABLED' }}</h6>
+                    </div>
+
+                    <div class='col-md-2'>
+                        @if($complaint->attachments->count() > 0)
+                        <div class="mb-4">
+                            <p class="text-muted mb-1 small text-uppercase fw-bold">Attachments:</p>
+                            <div class="d-flex flex-wrap gap-3">
+                                @foreach($complaint->attachments as $attachment)
+                                @php
+                                    $extension = pathinfo($attachment->file_path, PATHINFO_EXTENSION);
+                                    $isImage = in_array(strtolower($extension), ['jpg', 'jpeg', 'png', 'gif', 'webp', 'jfif']);
+
+                                    $fileName = explode('/', $attachment->file_path);
+                                    $fileName = end($fileName);
+                                @endphp
+                                <div class="text-center">
+                                    @if($isImage)
+                                    <a href="{{ route('assets', $fileName) }}" target="_blank"
+                                        class="d-block mb-1">
+                                        {{-- <img src="{{ asset('storage/' . $attachment->file_path) }}" alt="Attachment"
+                                            class="img-thumbnail"
+                                            style="width: 100px; height: 100px; object-fit: cover; border-radius: 10px;"> --}}
+                                    </a>
+                                    @endif
+                                    <a href="{{ route('assets', $fileName) }}" target="_blank"
+                                        class="btn btn-sm btn-outline-primary rounded-pill">
+                                        <i class="fas fa-file-download me-1"></i> View Attachment
+                                    </a>
+                                </div>
+                                @endforeach
+                            </div>
+                        </div>
+                        @endif
                     </div>
                 </div>
 
@@ -93,45 +124,12 @@
                     </div>
                 </div>
                 @endif
-
-                <div class="mb-4">
-                    <p class="text-muted mb-1 small text-uppercase fw-bold">Title:</p>
-                    <h5 class="fw-bold">{{ $complaint->title }}</h5>
-                </div>
                 <div class="mb-4">
                     <p class="text-muted mb-1 small text-uppercase fw-bold">Description:</p>
                     <div class="p-3 bg-light rounded-3 border">
                         {{ $complaint->description }}
                     </div>
                 </div>
-
-                @if($complaint->attachments->count() > 0)
-                <div class="mb-4">
-                    <p class="text-muted mb-1 small text-uppercase fw-bold">Attachments:</p>
-                    <div class="d-flex flex-wrap gap-3">
-                        @foreach($complaint->attachments as $attachment)
-                        @php
-                        $extension = pathinfo($attachment->file_path, PATHINFO_EXTENSION);
-                        $isImage = in_array(strtolower($extension), ['jpg', 'jpeg', 'png', 'gif', 'webp', 'jfif']);
-                        @endphp
-                        <div class="text-center">
-                            @if($isImage)
-                            <a href="{{ asset('storage/' . $attachment->file_path) }}" target="_blank"
-                                class="d-block mb-1">
-                                <img src="{{ asset('storage/' . $attachment->file_path) }}" alt="Attachment"
-                                    class="img-thumbnail"
-                                    style="width: 100px; height: 100px; object-fit: cover; border-radius: 10px;">
-                            </a>
-                            @endif
-                            <a href="{{ asset('storage/' . $attachment->file_path) }}" target="_blank"
-                                class="btn btn-sm btn-outline-primary rounded-pill">
-                                <i class="fas fa-file-download me-1"></i> View Attachment
-                            </a>
-                        </div>
-                        @endforeach
-                    </div>
-                </div>
-                @endif
             </div>
         </div>
 

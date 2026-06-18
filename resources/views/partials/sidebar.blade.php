@@ -78,12 +78,12 @@ $userInfo = app('App\Models\SiteSetting')->first();
                             <li><a href="{{ route('modify-listing.index') }}" class="slide-item {{ (request()->is('admin/modify-listing')) ? 'active' : '' }}">{{ __('Request to Modify') }}</a></li>
                         @endcan
                         
-                        @can('Product Listing -> Modified Listing Status')
-                        <li><a href="{{ route('modify-listing.requested') }}" class="slide-item {{ (request()->is('admin/modify-listing/requested')) ? 'active' : '' }}">{{ __('Modify Listings Status') }}</a></li>
-                        @endcan
-                        
                         @can('Product Listing -> Review Modify Listing (DB)')
                         <li><a href="{{ route('modify-listing.approval') }}" class="slide-item {{ (request()->is('admin/modify-listing/approval')) ? 'active' : '' }}">{{ __('Review Modify Listings (DB)') }}</a></li>
+                        @endcan
+                        
+                        @can('Product Listing -> Modified Listing Status')
+                        <li><a href="{{ route('modify-listing.requested') }}" class="slide-item {{ (request()->is('admin/modify-listing/requested')) ? 'active' : '' }}">{{ __('Modify Listings Status') }}</a></li>
                         @endcan
                         
                         @can('Product Listing -> Request New Listings (Img)')
@@ -165,6 +165,30 @@ $userInfo = app('App\Models\SiteSetting')->first();
                 </li>
                 @endcan
                 
+                @can('QR Generator')
+                <li class="slide {{ (request()->is('admin/qr-resource*')) ? 'is-expanded' : '' }}">
+                    <a class="side-menu__item" data-bs-toggle="slide" href="javascript:void(0)"><i class="side-menu__icon fa fa-qrcode"></i><span class="side-menu__label">{{ __('QR Generator') }}</span><i class="angle fe fe-chevron-right"></i></a>
+                    <ul class="slide-menu">
+                        <li class="side-menu-label1"><a href="javascript:void(0)">Apps</a></li>
+                        @can('QR Generator -> Create New QR')
+                        <li><a href="{{ route('qr-resource.create') }}" class="slide-item {{ (request()->is('admin/qr-resource/create')) ? 'active' : '' }}">{{ __('Create New QR.') }}</a></li>
+                        @endcan
+                        @can('QR Generator -> View All QR Lists')
+                        <li><a href="{{ route('qr-resource.index') }}" class="slide-item {{ (request()->is('admin/qr-resource')) ? 'active' : '' }}">{{ __('⁠All QR Lists') }}</a></li>
+                        @endcan
+                    </ul>
+                </li>
+                @endcan
+                
+                @can('QR Generator -> Review Reward')
+                <li class="slide">
+                    <a class="side-menu__item" href="{{ route('review.index') }}">
+                        <i class="side-menu__icon fa fa-gift"></i>
+                        <span class="side-menu__label">{{ __('Review Program') }}</span>
+                    </a>
+                </li>
+                @endcan
+                
                 @can('Marketplace Calculator')
                 <li class="slide">
                     <a class="side-menu__item" href="{{ route('marketplace.calculation') }}">
@@ -191,6 +215,8 @@ $userInfo = app('App\Models\SiteSetting')->first();
                     </ul>
                 </li>
                 @endcan
+                
+                
                 
                 @can('Marketing / Promotion Main Menu')
                 <li class="slide {{ (request()->is('admin/posts')) ? 'is-expanded' : '' }}">
@@ -265,6 +291,22 @@ $userInfo = app('App\Models\SiteSetting')->first();
                     </ul>
                 </li>
                 @endcan
+                
+                <li class="slide {{ request()->is('admin/complaints*') ? 'is-expanded' : '' }}">
+                    <a class="side-menu__item {{ request()->is('admin/complaints*') ? 'active' : '' }}" href="{{ route('admin.complaints.index') }}">
+                        <i class="side-menu__icon fa fa-legal"></i>
+                        <span class="side-menu__label">{{ __('Office Dispute') }}</span>
+                    </a>
+                </li>
+                
+                <li
+                    class="slide {{ request()->is('admin/official-complaints*') ? 'is-expanded' : '' }}">
+                    <a class="side-menu__item {{ request()->is('admin/official-complaints*') ? 'active' : '' }}"
+                        href="{{ route('admin.official-complaints.index') }}">
+                        <i class="side-menu__icon fa fa-tasks"></i>
+                        <span class="side-menu__label">{{ __('Task Manager') }}</span>
+                    </a>
+                </li>
 
                 @can('User Details (Main Menu)')
                 <li class="slide {{ (request()->is('admin/users/*') || request()->is('admin/users')) ? 'is-expanded' : '' }}">
@@ -314,21 +356,7 @@ $userInfo = app('App\Models\SiteSetting')->first();
                 </li>
                 @endif
                 
-                <li class="slide {{ request()->is('admin/complaints*') ? 'is-expanded' : '' }}">
-                    <a class="side-menu__item {{ request()->is('admin/complaints*') ? 'active' : '' }}" href="{{ route('admin.complaints.index') }}">
-                        <i class="side-menu__icon fe fe-file-text"></i>
-                        <span class="side-menu__label">{{ __('Office Dispute') }}</span>
-                    </a>
-                </li>
                 
-                <li
-                    class="slide {{ request()->is('admin/official-complaints*') ? 'is-expanded' : '' }}">
-                    <a class="side-menu__item {{ request()->is('admin/official-complaints*') ? 'active' : '' }}"
-                        href="{{ route('admin.official-complaints.index') }}">
-                        <i class="side-menu__icon fe fe-file-text"></i>
-                        <span class="side-menu__label">{{ __('Task Manager') }}</span>
-                    </a>
-                </li>
 
                 @if(auth()->user()->can('Settings (Main Menu)'))
                 <li class="slide {{ (request()->is('admin/departments') || request()->is('admin/issue-types') || request()->is('admin/fulfilment-types') || request()->is('admin/settings/*') || request()->is('admin/settings') || request()->is('admin/backup/emails') || request()->is('admin/backup/logs') || request()->is('admin/subcategories') || request()->is('admin/categories')) ? 'is-expanded' : '' }}">

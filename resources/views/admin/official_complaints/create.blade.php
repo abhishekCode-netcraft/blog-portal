@@ -21,9 +21,7 @@
                     <strong>Created Date:</strong> {{ \Carbon\Carbon::now()->format('d M, Y') }}
                 </div>
                 <div><strong>Created By:</strong> {{ auth()->user()->name }}</div>
-                {{-- <div class='d-flex'>
-                    <strong>Delivery Timeline:</strong>
-                </div> --}}
+                
                 <div><strong>User's Email:</strong> {{ auth()->user()->email }}</div>
             </div>
 

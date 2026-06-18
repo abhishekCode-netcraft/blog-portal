@@ -86,7 +86,7 @@ class AdminComplaintController extends Controller
                 'orders.*.cx_name' => 'nullable|string',
                 'orders.*.cx_phone' => 'nullable|string',
                 'orders.*.loss_value' => 'nullable|numeric',
-                'attachments.*' => 'nullable|file|mimes:jpg,jpeg,png,pdf,xlsx,xls|max:5120',
+                'files.*' => 'nullable|file|mimes:jpg,jpeg,png,pdf,xlsx,xls|max:5120',
                 'delivery_timeline' => 'required|integer|min:1|max:7',
                 'managed_by' => 'required|string|in:self with admin,admin',
                 'specific_user_email' => 'required_if:specific_tag,1|nullable|email',
@@ -132,8 +132,8 @@ class AdminComplaintController extends Controller
                 }
             }
 
-            if ($request->hasFile('attachments')) {
-                foreach ($request->file('attachments') as $file) {
+            if ($request->hasFile('files')) {
+                foreach ($request->file('files') as $file) {
                     $path = $file->store('complaints/attachments', 'public');
                     $complaint->attachments()->create(['file_path' => $path]);
                 }
@@ -142,7 +142,6 @@ class AdminComplaintController extends Controller
             // Email Notification for Complaint Raised
             $adminEmails = User::role('Super Admin')->pluck('email')->toArray();
             $deptHeadEmail = $complaint->department->email;
-
             if ($adminEmails || $deptHeadEmail) {
                 Mail::to($adminEmails)->cc($deptHeadEmail)->send(new ComplaintRaisedMail($complaint));
             }
@@ -284,7 +283,7 @@ class AdminComplaintController extends Controller
                 'orders.*.cx_name' => 'nullable|string',
                 'orders.*.cx_phone' => 'nullable|string',
                 'orders.*.loss_value' => 'nullable|numeric',
-                'attachments.*' => 'nullable|file|mimes:jpg,jpeg,png,pdf,xlsx,xls|max:5120',
+                'files.*' => 'nullable|file|mimes:jpg,jpeg,png,pdf,xlsx,xls|max:5120',
                 'delivery_timeline' => 'required|integer|min:1|max:7',
                 'managed_by' => 'required|string|in:self with admin,admin',
                 'specific_user_email' => 'required_if:specific_tag,1|nullable|email',
@@ -331,9 +330,9 @@ class AdminComplaintController extends Controller
                 }
             }
 
-            if ($request->hasFile('attachments')) {
-                foreach ($request->file('attachments') as $file) {
-                    $path = $file->store('complaints/attachments', 'public');
+            if ($request->hasFile('files')) {
+                foreach ($request->file('files') as $file) {
+                    $path = $file->store('complaints/files', 'public');
                     $complaint->attachments()->create(['file_path' => $path]);
                 }
             }

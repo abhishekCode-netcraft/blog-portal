@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\ListingController;
+use App\Http\Controllers\Api\ReviewController;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,3 +23,5 @@ use App\Http\Controllers\Api\ListingController;
 Route::get('/listings', [ListingController::class, 'index']);
 
 Route::get('/search-by-asins/{asin}', [ListingController::class, 'getListingData']);
+
+Route::post('save-review', [ReviewController::class, 'store']);

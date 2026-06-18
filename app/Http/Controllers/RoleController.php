@@ -103,6 +103,11 @@ class RoleController extends Controller
                 // Add the permission to the array for the current category
                 $permissionsInCategory['Marketing'][] = $permission;
             }
+
+            if (stripos($permission['name'], 'QR') !== false) {
+                // Add the permission to the array for the current category
+                $permissionsInCategory['QR'][] = $permission;
+            }
         }
 
         return view('accounts.roles.create', compact('permissions', 'permissionsInCategory'));
@@ -199,6 +204,11 @@ class RoleController extends Controller
             if (stripos($permission['name'], 'Marketing') !== false) {
                 // Add the permission to the array for the current category
                 $permissionsInCategory['Marketing'][] = $permission;
+            }
+
+            if (stripos($permission['name'], 'QR') !== false) {
+                // Add the permission to the array for the current category
+                $permissionsInCategory['QR'][] = $permission;
             }
         }
 

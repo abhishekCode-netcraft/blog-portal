@@ -92,8 +92,6 @@ class OnDemandListingController extends Controller
             ->get();
 
         return view('on-demand.verify', compact('requestedCreate', 'requestedUpdate', 'completed'));
-
-
     }
 
     public function complete(Request $request)
