@@ -26,7 +26,7 @@ class MarketPlaceController extends Controller
     {
         $pubName = $request->pub_name;
         $record = WeightVSCourier::where('pub_name', $pubName)->first();
-        
+
         $bookTypes = [];
         if ($record) {
             for ($i = 1; $i <= 6; $i++) {
@@ -34,7 +34,8 @@ class MarketPlaceController extends Controller
                 if (!empty($record->$typeField)) {
                     $bookTypes[] = [
                         'id' => $i,
-                        'name' => $record->$typeField
+                        'name' => $record->$typeField,
+                        'record' => $record
                     ];
                 }
             }
@@ -48,7 +49,7 @@ class MarketPlaceController extends Controller
         $pubName = $request->pub_name;
         $typeId = $request->type_id;
         $record = WeightVSCourier::where('pub_name', $pubName)->first();
-        
+
         $discount = 0;
         if ($record) {
             $discountField = "book_discount_$typeId";
@@ -61,7 +62,7 @@ class MarketPlaceController extends Controller
     public function getWeightCharges(Request $request)
     {
         $weight = (float)$request->weight;
-        
+
         // Find exact match or next higher weight
         $record = MarketPlaceCalculationSetting::where('weight', '>=', $weight)
             ->orderBy('weight', 'asc')
@@ -86,11 +87,11 @@ class MarketPlaceController extends Controller
         $packagingCost = (float)$request->packaging_cost;
         $courierCharges = (float)$request->courier_charges;
         $preDefinedShipping = (float)$request->pre_defined_shipping;
-        
+
         // Stage 1: Basic Costing
         // Formula: Purchase Price = MRP - (Discount % - Transportation %) of MRP
         $purchasePrice = $mrp - ($mrp * (($discountPer - $transportationPer) / 100));
-        
+
         // Lookup Weight based on Purchase Price range
         $weightRecord = MarketPlaceCalculationSetting::where('min', '<=', $purchasePrice)
             ->where('max', '>=', $purchasePrice)
@@ -102,9 +103,9 @@ class MarketPlaceController extends Controller
         // Marketplace Commission Slab Logic
         $commission = 0;
         $slab = MarketplaceCommission::where('min_range', '<=', $netCost)
-            ->where(function($query) use ($netCost) {
+            ->where(function ($query) use ($netCost) {
                 $query->where('max_range', '>=', $netCost)
-                      ->orWhereNull('max_range');
+                    ->orWhereNull('max_range');
             })
             ->first();
 

@@ -31,6 +31,10 @@ class WeightVSCourierImport implements ToModel, WithHeadingRow
             'sku_pattern' => $row['sku_pattern'],
             'marginal_gaps' => $row['marginal_gaps'],
             'logo_url' => $row['logo_url'] ?? null,
+            'max_discount' => $row['max_discount'] ?? null,
+            'other_limitation' => $row['other_limitation'] ?? null,
+            'complaint_frequency' => $row['complaint_frequency'] ?? null,
+            'dealer_name' => $row['dealer_name'] ?? null,
         ]);
     }
 }

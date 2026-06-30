@@ -2,23 +2,23 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\FieldValidation;
-use App\Models\GoogleCredentail;
+use App\Models\CityCost;
 use App\Models\SiteSetting;
-use Maatwebsite\Excel\Facades\Excel;
 use App\Models\Publication;
-use App\Models\PurchesPriceWeightCourier;
+use App\Models\FieldValidation;
+use App\Imports\CityCostImport;
 use App\Models\WeightVSCourier;
+use App\Models\GoogleCredentail;
 use App\Models\BookSupplierRate;
 use App\Imports\PublicationsImport;
-use App\Imports\PurchesPriceWeightCourierImport;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Models\MarketplaceCommission;
 use App\Imports\WeightVSCourierImport;
 use App\Imports\BookSupplierRateImport;
-use App\Models\CityCost;
-use App\Models\MarketplaceCommission;
-use App\Imports\CityCostImport;
+use App\Models\PurchesPriceWeightCourier;
 use App\Imports\MarketplaceCommissionImport;
 use App\Models\MarketPlaceCalculationSetting;
+use App\Imports\PurchesPriceWeightCourierImport;
 use App\Imports\MarketPlaceCalculationSettingImport;
 
 class SettingsController extends Controller
@@ -42,7 +42,6 @@ class SettingsController extends Controller
     public function blog()
     {
         $bloggerCreds = GoogleCredentail::where('scope', 'Blogger')->first();
-
         $merchantCreds = GoogleCredentail::where('scope', 'Merchant')->first();
 
         return view('settings.index', compact('bloggerCreds', 'merchantCreds'));
@@ -273,8 +272,6 @@ class SettingsController extends Controller
 
         return view('settings.policy', compact('siteSettings'));
     }
-
-
 
     public function downloadCityCostSample()
     {

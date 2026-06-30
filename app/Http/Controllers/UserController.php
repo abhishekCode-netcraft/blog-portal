@@ -50,6 +50,9 @@ class UserController extends Controller
         $users = User::whereDoesntHave('roles', function ($query) {
             $query->where('name', 'Developer');
         })
+            ->when(request()->filled('status'), function ($query) {
+                $query->where('status', request('status'));
+            })
             ->withSum(['counts as total_created' => function ($query) {
                 $query->where('status', 'Created');
             }], 'create_count')

@@ -112,19 +112,22 @@ $getRoles = app('App\Http\Controllers\RoleController');
                     <h4 class="card-title">
                         All Users List
                     </h4>
-                    <form action='{{ route("users.index") }}' method='GET' id='countform'>
+                    <form action='{{ route("users.index") }}' method='GET' id='countform' class='d-flex gap-2'>
                         <input type='hidden' name='page' value='{{ request()->page }}' />
+                        <select class='form-control' name='status' id='status'>
+                            <option value='' {{ request()->status == '' ? 'selected' : '' }}>Status</option>
+                            <option value=1 {{ request()->status == 1 ? 'selected' : '' }}>Active</option>
+                            <option value=0 {{ request()->status == 0 ? 'selected' : '' }}>InActive</option>
+                            <option value=2 {{ request()->status == 2 ? 'selected' : '' }}>Suspended</option>
+                            <option value=3 {{ request()->status == 3 ? 'selected' : '' }}>Blocked</option>
+                        </select>
+
                         <select class='form-control' name='users' id='count'>
                             <option value='50' {{ request()->users == 50 ? 'selected' : '' }}>50</option>
                             <option value='100' {{ request()->users == 100 ? 'selected' : '' }}>100</option>
                             <option value='150' {{ request()->users == 150 ? 'selected' : '' }}>150</option>
                         </select>
                     </form>
-
-                    <!-- @can('User create')
-                            <a href="{{ route('users.create') }}"
-                                class="btn btn-primary float-right">{{ __('Create User') }}</a>
-                        @endcan -->
                 </div>
 
                 <div class="card-body">
@@ -247,6 +250,10 @@ $getRoles = app('App\Http\Controllers\RoleController');
 <script>
     $(document).ready(function(){
          $("#count").on('change', function(){
+             $("#countform").submit();
+         })
+
+         $("#status").on('change', function(){
              $("#countform").submit();
          })
     });

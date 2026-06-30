@@ -198,12 +198,6 @@ $userInfo = app('App\Models\SiteSetting')->first();
                 </li>
                 @endcan
                 
-                <!--<li>-->
-                <!--    <a href="{{ route('marketplace.calculation') }}" class="slide-item {{ (request()->is('admin/marketplace/calculation')) ? 'active' : '' }}">-->
-                        
-                <!--    </a>-->
-                <!--</li>-->
-                
                 @can('Lead/Job Application')
                 <li class="slide {{ (request()->is('admin/candidates/enquiries')) ? 'is-expanded' : '' }}">
                     <a class="side-menu__item" data-bs-toggle="slide" href="javascript:void(0)"><i class="side-menu__icon fa fa-user-plus"></i><span class="side-menu__label">{{ __('Leads/Job Applications') }}</span><i class="angle fe fe-chevron-right"></i></a>
@@ -215,8 +209,6 @@ $userInfo = app('App\Models\SiteSetting')->first();
                     </ul>
                 </li>
                 @endcan
-                
-                
                 
                 @can('Marketing / Promotion Main Menu')
                 <li class="slide {{ (request()->is('admin/posts')) ? 'is-expanded' : '' }}">
@@ -292,21 +284,24 @@ $userInfo = app('App\Models\SiteSetting')->first();
                 </li>
                 @endcan
                 
+                @can('Office Dispute')
                 <li class="slide {{ request()->is('admin/complaints*') ? 'is-expanded' : '' }}">
                     <a class="side-menu__item {{ request()->is('admin/complaints*') ? 'active' : '' }}" href="{{ route('admin.complaints.index') }}">
                         <i class="side-menu__icon fa fa-legal"></i>
                         <span class="side-menu__label">{{ __('Office Dispute') }}</span>
                     </a>
                 </li>
+                @endcan
                 
-                <li
-                    class="slide {{ request()->is('admin/official-complaints*') ? 'is-expanded' : '' }}">
+                @can('Task Manager')
+                <li class="slide {{ request()->is('admin/official-complaints*') ? 'is-expanded' : '' }}">
                     <a class="side-menu__item {{ request()->is('admin/official-complaints*') ? 'active' : '' }}"
                         href="{{ route('admin.official-complaints.index') }}">
                         <i class="side-menu__icon fa fa-tasks"></i>
                         <span class="side-menu__label">{{ __('Task Manager') }}</span>
                     </a>
                 </li>
+                @endcan
 
                 @can('User Details (Main Menu)')
                 <li class="slide {{ (request()->is('admin/users/*') || request()->is('admin/users')) ? 'is-expanded' : '' }}">

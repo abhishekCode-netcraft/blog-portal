@@ -31,21 +31,67 @@
                     </div>
                 </div>
                 <div class="col-md-3">
-                    
-                    <div class="form-group">
-                        <label class="form-label">{{ __('Publication / Sub Category: ') }}</label>
-                          <div class="d-flex" style="grid-gap: 10px;">
-                            <select class="form-control searchable_dropdown" name="publication" id="publication">
-                                <option value="">Select Publication</option>
-                                @foreach($publications as $pub)
-                                    <option value="{{ $pub->pub_name }}">{{ $pub->pub_name }}</option>
-                                @endforeach
-                            </select>
-                             <select class="form-control searchable_dropdown" name="sub_category" id="sub_category">
-                                <option value="">Select Sub Category</option>
-                            </select>
+                     <label class="form-label">
+                        <div class='w-100 d-flex justify-content-between'>
+                            {{ __('Publication / Sub Category:') }}
+                            
+                            <div>
+                                <span
+                                    id='dealer_name'
+                                    data-bs-toggle="tooltip"
+                                    data-bs-placement="right"
+                                    title=""
+                                    style="cursor:pointer;color:blue;margin-left:5px;font-size:15px;">
+                                    <i class="fa fa-industry" aria-hidden="true"></i>
+                                </span>
+                                
+                                <span
+                                    id='other_limitation'
+                                    data-bs-toggle="tooltip"
+                                    data-bs-placement="right"
+                                    title=""
+                                    style="cursor:pointer;color:#757505;margin-left:5px;font-size:15px;">
+                                    <i class="fa fa-warning"></i>
+                                </span>
+        
+                                <span
+                                    id='complaint_frequency'
+                                    data-bs-toggle="tooltip"
+                                    data-bs-placement="right"
+                                    title=""
+                                    style="cursor:pointer;color:red;margin-left:5px;font-size:15px;">
+                                    <i class="fa fa-legal"></i>
+                                </span>
+                            </div>
                         </div>
+                    </label>
+
+                    <div class="d-flex" style="gap:10px;">
+                        <select class="form-control searchable_dropdown" name="publication" id="publication">
+                            <option value="">Select Publication</option>
+                            @foreach($publications as $pub)
+                                <option value="{{ $pub->pub_name }}">{{ $pub->pub_name }}</option>
+                            @endforeach
+                        </select>
+
+                        <select class="form-control searchable_dropdown" name="sub_category" id="sub_category">
+                            <option value="">Select Sub Category</option>
+                        </select>
                     </div>
+                    <!--<div class="form-group">-->
+                    <!--    <label class="form-label">{{ __('Publication / Sub Category: ') }}</label>-->
+                    <!--      <div class="d-flex" style="grid-gap: 10px;">-->
+                    <!--        <select class="form-control searchable_dropdown" name="publication" id="publication">-->
+                    <!--            <option value="">Select Publication</option>-->
+                    <!--            @foreach($publications as $pub)-->
+                    <!--                <option value="{{ $pub->pub_name }}">{{ $pub->pub_name }}</option>-->
+                    <!--            @endforeach-->
+                    <!--        </select>-->
+                    <!--         <select class="form-control searchable_dropdown" name="sub_category" id="sub_category">-->
+                    <!--            <option value="">Select Sub Category</option>-->
+                    <!--        </select>-->
+                    <!--    </div>-->
+                    <!--</div>-->
 
                 </div>
             <div class="col-md-3">
@@ -143,10 +189,16 @@
                     </thead>
                     <tbody>
                         <tr>
-                            <td style="border-bottom: 1px solid black;"><strong>Minimum Price: </strong><span id="span_min_price_1" class="ml-2 font-weight-bold">0</span></td>
+                            <td style="border-bottom: 1px solid black;"><strong>Minimum Price: </strong><span id="span_min_price_1" class="ml-2 font-weight-bold">0</span> [<span id='min_dis_1'></span>%]</td>
                             <td style="border-bottom: 1px solid black;"><strong>Maximum Price: </strong><span id="span_max_price_1" class="ml-2 font-weight-bold">0</span></td>
-                            <td style="border-bottom: 1px solid black;"><strong>Minimum Price: </strong><span id="span_min_price_2" class="ml-2 font-weight-bold">0</span></td>
+                            <td style="border-bottom: 1px solid black;"><strong>Minimum Price: </strong><span id="span_min_price_2" class="ml-2 font-weight-bold">0</span> [<span id='min_dis_2'></span>%]</td>
                             <td style="border-bottom: 1px solid black;"><strong>Maximum Price: </strong><span id="span_max_price_2" class="ml-2 font-weight-bold">0</span></td>
+                        </tr>
+                        <tr>
+                            <td style="border-bottom: 1px solid black;"><strong>Limit Minimum Price: </strong><span id="limit_min_price_1" class="ml-2 font-weight-bold">0</span></td>
+                            <td style="border-bottom: 1px solid black;"><strong>Limit Maximum Price: </strong><span id="limit_max_price_1" class="ml-2 font-weight-bold">0</span></td>
+                            <td style="border-bottom: 1px solid black;"><strong>Limit Minimum Price: </strong><span id="limit_min_price_2" class="ml-2 font-weight-bold">0</span></td>
+                            <td style="border-bottom: 1px solid black;"><strong>Limit Maximum Price: </strong><span id="limit_max_price_2" class="ml-2 font-weight-bold">0</span></td>
                         </tr>
                     </tbody>
                 </table>
@@ -209,6 +261,7 @@
 
 @push('js')
 <script>
+var limited_dis = 0;
 $(document).ready(function() {
     $(".searchable_dropdown").select2();
     
@@ -229,6 +282,14 @@ $(document).ready(function() {
         
         if (pubName) {
             $.post("{{ route('marketplace.get_book_types') }}", { pub_name: pubName }, function(data) {
+                $('#other_limitation').attr('data-bs-original-title', data[0].record.other_limitation);
+                $('#complaint_frequency').attr('data-bs-original-title', data[0].record.complaint_frequency);
+                $('#dealer_name').attr('data-bs-original-title', data[0].record.dealer_name);
+                
+                var mrp = Number($('#mrp').val());
+                const max_dis = Number(data[0].record.max_discount);
+                limited_dis = mrp-(mrp*max_dis)/100;
+                
                 data.forEach(function(type) {
                     $('#sub_category').append(`<option value="${type.id}">${type.name}</option>`);
                 });
@@ -318,6 +379,24 @@ $(document).ready(function() {
                 $('#res_competitor_price').val(response.competitor_price);
                 $('#res_your_product_price').text(response.your_product_price);
                 $('#res_your_shipping_set').text(response.your_shipping_set);
+                
+                const mrp = Number($('#mrp').val());
+                const dis = (mrp - response.min_price_1)/mrp*100;
+                $("#min_dis_1").html(dis.toFixed(2));
+                
+                const dis_2 = (mrp - response.min_price_2)/mrp*100;
+                $("#min_dis_2").html(dis_2.toFixed(2));
+                
+                var limit_min_price_1 = response.min_price_1 > limited_dis ? response.min_price_1 : limited_dis
+                const limited_dis_1 = (mrp - limit_min_price_1)/mrp*100;
+                $("#limit_min_price_1").text(limit_min_price_1 + " ["+ limited_dis_1.toFixed(2) +"]%");
+                
+                var limit_min_price_2 = response.min_price_2 > limited_dis ? response.min_price_2 : limited_dis
+                const limited_dis_2 = (mrp - limit_min_price_2)/mrp*100;
+                $("#limit_min_price_2").text(limit_min_price_2 + " ["+ limited_dis_2.toFixed(2) +"]%");
+                
+                $('#limit_max_price_1').text($('#mrp').val() || 0);
+                $('#limit_max_price_2').text($('#mrp').val() || 0);
             }
         });
     }

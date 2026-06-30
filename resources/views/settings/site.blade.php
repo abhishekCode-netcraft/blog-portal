@@ -165,6 +165,7 @@ $buttonFour = explode(',',$siteSettings?->button_4);
                     <div class='d-flex align-items-center mt-2 cursor-pointer' style="grid-gap: 10px;cursor: pointer;">
                         <label for="name" class="form-label">{{ __('City Cost Dropdown (Uploader)') }}<span class="text-danger">*</span></label>
                         <a class='text-dark' href="{{ route('settings.city_cost.sample') }}" title='Download Sample File' download><i class='fa fa-download'></i></a>
+                        <a class='text-dark' href="/storage/site/city_costs.xlsx" title='Download File' download><i class='fa fa-download'></i></a>
                     </div>
                     <div class="row mb-5">
                         <div class="col-lg-3">

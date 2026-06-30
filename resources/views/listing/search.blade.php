@@ -162,6 +162,10 @@
                                     <th>{{ __('Official URL') }}</th>
                                     <th>{{ __('SKU Pattern') }}</th>
                                     <th>{{ __('Marginal Gaps') }}</th>
+                                    <th>{{ __('Maximum Discount') }}</th>
+                                    <th>{{ __('Other Limitation') }}</th>
+                                    <th>{{ __('Complaint Frequency') }}</th>
+                                    <th>{{ __('Dealer Name') }}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -187,6 +191,10 @@
                                     <td>{{ $publisher->official_url }}</td>
                                     <td>{{ $publisher->sku_pattern }}</td>
                                     <td>{{ $publisher->marginal_gaps }}</td>
+                                    <td>{{ $publisher->max_discount }}</td>
+                                    <td>{{ $publisher->other_limitation }}</td>
+                                    <td>{{ $publisher->complaint_frequency }}</td>
+                                    <td>{{ $publisher->dealer_name }}</td>
                                 </tr>
                                 @empty
                                 @endforelse
@@ -308,6 +316,10 @@
                                     <th>{{ __('Official URL') }}</th>
                                     <th>{{ __('SKU Pattern') }}</th>
                                     <th>{{ __('Marginal Gaps') }}</th>
+                                    <th>{{ __('Maximum Discount') }}</th>
+                                    <th>{{ __('Other Limitation') }}</th>
+                                    <th>{{ __('Complaint Frequency') }}</th>
+                                    <th>{{ __('Dealer Name') }}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -333,6 +345,10 @@
                                     <td>{{ $publisher->official_url }}</td>
                                     <td>{{ $publisher->sku_pattern }}</td>
                                     <td>{{ $publisher->marginal_gaps }}</td>
+                                    <td>{{ $publisher->max_discount }}</td>
+                                    <td>{{ $publisher->other_limitation }}</td>
+                                    <td>{{ $publisher->complaint_frequency }}</td>
+                                    <td>{{ $publisher->dealer_name }}</td>
                                 </tr>
                                 @empty
                                 @endforelse
