@@ -15,6 +15,10 @@
         background-color: #808007;
         color: white;
     }
+    
+    body {
+        background-image: inherit !important;
+    }
 </style>
 @endpush
 
@@ -38,8 +42,7 @@
 
     <div class="row">
         <div class="col-md-9 col-xl-12 fields">
-             @include('components.fetch-product')
-            
+            @include('components.fetch-product')
             <form action="{{ route('listing.store') }}" method="POST" enctype='multipart/form-data' id='form'>
                 @csrf
                 <div class="card">
@@ -52,9 +55,9 @@
                     <div class="card-body">
                         <span class="d-flex justify-content-center mb-4 alert-msg text-center align-items-center" style='grid-gap:5px;'><i class='fa fa-warning'></i><strong>Alert:</strong> Please refrain from creating duplicate listings repeatedly. Prior to creating any new listings, ensure to first check the product in 'Search Listing (M/S)'.</span>
                         <hr />
-                       
-
+                        
                         <div id="progressBar" class="text-end"></div>
+
                         <div>
                             <div class="form-group">
                                 <div class="d-flex align-items-center justify-content-between">
@@ -85,7 +88,7 @@
                                 </label>
                                 <label for="description" class="form-label d-flex justify-content-between text-danger" style="margin-top: -10px;">
                                     <div>{{ __('Do not use 3rd Party Links/Website Names') }}</div>
-                                      @include('components.discription-fetcher')
+                                    @include('components.discription-fetcher')
                                 </label>
                                 <!-- <div id="summernote" id="description" class="form-control @error('description') is-invalid @enderror" name="description">
                                     {{ old('description') }}
@@ -126,17 +129,18 @@
                                 <span class="error-message discount" style="color:red;"></span>
                             </div>
 
-                            <div class="form-group col-md-4">
+                            <div class="form-group col-md-4" id='selling_price_section'>
                                 <label for="selling_price" class="form-label d-flex justify-content-between">
                                     <div>{{ __('Selling Price') }}<span class="text-danger">*</span></div>
                                     <div>
+                                        
                                         <a href='{{ $siteSetting->calc_link }}' target='_blank'>Calculator</a>
-                                        <!--<a target='_blank' href="https://docs.google.com/spreadsheets/d/1uSqo6RhsLHaVcVrkEjO_SmOWiXqWBC-aV1LvsowgsL0/"> Disc. Info.</a>-->
-
                                     </div>
                                 </label>
                                 <input id="selling_price" type="number" class="form-control @error('selling_price') is-invalid @enderror" name="selling_price" value="{{ old('selling_price') }}" autocomplete="selling_price" autofocus placeholder="Selling Price">
                                 <span class="error-message selling_price" style="color:red;"></span>
+
+                                @include('generate-price.single-price')
 
                                 @error('selling_price')
                                 <span class="invalid-feedback" role="alert">
@@ -148,13 +152,9 @@
                     </div>
                 </div>
 
-
-                
-
                 <!-- weight and couriers -->
                 
                 @include('price-calculator')
-
                 
                 <div class="card">
                     <div class="card-body">
@@ -253,7 +253,7 @@
                                                     {{ __('ISBN 10') }} <span class="text-danger">*</span>
                                                 </label>
                                             </div>
-                                            <input type="text" class="form-control" id="isbn_10" name="isbn_10" value="{{ old('isbn_10') }}" autofocus placeholder="ISBN 10">
+                                            <input type="text" class="form-control" name="isbn_10" id='isbn_10' value="{{ old('isbn_10') }}" autofocus placeholder="ISBN 10">
                                             <span class="error-message isbn_10" style="color:red;"></span>
 
                                             @error('isbn_10')
@@ -354,7 +354,7 @@
                                             <label for="condition" class="form-label">{{ __('Product Condition') }}<span class="text-danger">*</span></label>
                                             <select class="form-control @error('condition') is-invalid @enderror" name="condition" value="{{ old('condition') }}">
                                                 <option value="">--Select--</option>
-                                                <option value="New" selected>New</option>
+                                                <option value="New">New</option>
                                                 <option value="Like New">Like New</option>
                                                 <option value="Old">Old</option>
                                             </select>

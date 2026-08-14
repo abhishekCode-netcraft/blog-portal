@@ -104,6 +104,8 @@ $userInfo = app('App\Models\SiteSetting')->first();
                         <li><a href="{{ route('on-demand.logs') }}" class="slide-item {{ (request()->is('admin/on-demand-listing/logs')) ? 'active' : '' }}">{{ __('Log Report Image Upload') }}</a></li>
                         @endcan
                         
+                        <!--<li><a href="{{ route('upload.price.file') }}" class="slide-item {{ (request()->is('admin/upload/price/file')) ? 'active' : '' }}">{{ __('Generate Prices') }}</a></li>-->
+                        
                         <!--<li>-->
                         <!--    <a href="{{ route('candidates.enquiries') }}" class="slide-item {{ (request()->is('admin/candidates/enquiries')) ? 'active' : '' }}">-->
                         <!--        {{ __('Candidate Enquiries') }}-->
@@ -118,10 +120,10 @@ $userInfo = app('App\Models\SiteSetting')->first();
                     <a class="side-menu__item" data-bs-toggle="slide" href="javascript:void(0)"><i class="side-menu__icon fe fe-list"></i><span class="side-menu__label">{{ __('Images Creation') }}</span><i class="angle fe fe-chevron-right"></i></a>
                     <ul class="slide-menu">
                         @can('Image Creation -> Single Image Maker')
-                        <li><a href="{{ route('image.single.create', ['maker' => 'wo-watermark', 'size' => 'basic']) }}" class="slide-item {{ (request()->is('admin/images/single/create')) ? 'active' : '' }}">{{ __('Single Image Maker') }}</a></li>
+                        <li><a href="{{ route('image.single.create', ['maker' => 'wo-watermark', 'size' => 'basic', 'format' => 'webp']) }}" class="slide-item {{ (request()->is('admin/images/single/create')) ? 'active' : '' }}">{{ __('Single Image Maker') }}</a></li>
                         @endcan
                         @can('Image Creation -> Combo Image Maker')
-                        <li><a href="{{ route('image.combo.create', ['maker' => 'wo-watermark', 'size' => 'basic']) }}" class="slide-item {{ (request()->is('admin/images/combo/create')) ? 'active' : '' }}">{{ __('Combo Image Maker') }}</a></li>
+                        <li><a href="{{ route('image.combo.create', ['maker' => 'wo-watermark', 'size' => 'basic', 'format' => 'webp']) }}" class="slide-item {{ (request()->is('admin/images/combo/create')) ? 'active' : '' }}">{{ __('Combo Image Maker') }}</a></li>
                         @endcan
                         @can('Image Creation -> Gallery ( DB )')
                         <li><a href="{{ route('image.gallery', ['count' => 15, 'page' => '']) }}" class="slide-item {{ (request()->is('admin/images/gallery')) ? 'active' : '' }}">{{ __('Gallery List Page ( DB )') }}</a></li>
@@ -197,6 +199,13 @@ $userInfo = app('App\Models\SiteSetting')->first();
                     </a>
                 </li>
                 @endcan
+                
+                <li class="slide">
+                    <a class="side-menu__item" href="{{ route('upload.price.file') }}">
+                        <i class="side-menu__icon fa fa-money"></i>
+                        <span class="side-menu__label">{{ __('Generate Price ( API )') }}</span>
+                    </a>
+                </li>
                 
                 @can('Lead/Job Application')
                 <li class="slide {{ (request()->is('admin/candidates/enquiries')) ? 'is-expanded' : '' }}">
@@ -294,7 +303,8 @@ $userInfo = app('App\Models\SiteSetting')->first();
                 @endcan
                 
                 @can('Task Manager')
-                <li class="slide {{ request()->is('admin/official-complaints*') ? 'is-expanded' : '' }}">
+                <li
+                    class="slide {{ request()->is('admin/official-complaints*') ? 'is-expanded' : '' }}">
                     <a class="side-menu__item {{ request()->is('admin/official-complaints*') ? 'active' : '' }}"
                         href="{{ route('admin.official-complaints.index') }}">
                         <i class="side-menu__icon fa fa-tasks"></i>

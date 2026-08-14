@@ -49,6 +49,27 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <div style="border: 1px solid #ccc;">
+                                        <span class='text-center w-100 d-block fw-bold' style="background-color: #240d0d;color: white;padding: 10px;">Image Format</span>
+                                        <div class="d-flex" style="padding-right: 5px;">
+                                            <div class="d-flex align-items-baseline">
+                                                <input type="radio" class="m-2" name="format" id="format" value='webp' {{ request()->format == 'webp' ?  'checked' : '' }} />
+                                                <label for="format">WebP <br /></label>
+                                            </div>
+                                            
+                                            @can('Image Creation -> Image Format')
+                                            <div class="d-flex align-items-baseline">
+                                                <input type="radio" class="m-2" name="format" id="format" value='png' {{ request()->format == 'png' ?  'checked' : '' }} />
+                                                <label for="format">PNG <br /></label>
+                                            </div>
+        
+                                            <div class="d-flex align-items-baseline">
+                                                <input type="radio" class="m-2" name="format" id="format" value='jpeg' {{ request()->format == 'jpeg' ?  'checked' : '' }} />
+                                                <label for="format">JPEG <br /></label>
+                                            </div>
+                                            @endcan
+                                        </div>
+                                    </div>
                                 </div>
                                 <!--<div class="d-flex">-->
                                 <!--    <div class="d-flex align-items-baseline">-->
@@ -70,7 +91,9 @@
 
                         <form action="{{ route('image.collage.store') }}" method="post" enctype="multipart/form-data" id="{{ request()->maker == 'wo-watermark' ? 'multipleImagesform': '' }}">
                             @csrf
-                            <input type="hidden" name="size" value='{{ request()->size }}' />
+                            <input type='hidden' name='size' value='{{ request()->size }}' />
+                            <input type='hidden' name='format' value='{{ request()->format }}' />
+                            
                             <div class="form-group mt-2" @error('multipleImages') style="border: red 2px dotted;" @enderror>
                                 @if(request()->maker == 'wo-watermark')
                                 <div class="form-group">

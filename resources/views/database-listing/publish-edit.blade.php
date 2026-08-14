@@ -147,6 +147,7 @@
                                     </div>
                                 </label>
                                 <input id="selling_price" type="number" class="form-control @error('selling_price') is-invalid @enderror" name="selling_price" value="{{ old('selling_price') ?? $listing->selling_price }}" autocomplete="selling_price" autofocus placeholder="Selling Price">
+                                @include('generate-price.single-price')
 
                                 @error('selling_price')
                                 <span class="invalid-feedback" role="alert">

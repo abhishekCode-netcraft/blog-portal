@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
 use ZipArchive;
 use Carbon\Carbon;
+use Maatwebsite\Excel\Excel as ExcelFormat;
 
 class BackupListing extends Command
 {
@@ -441,8 +442,16 @@ class BackupListing extends Command
      */
     public function generateXLSFile($currentTimeInSeconds, $listingData)
     {
-        $fileName = 'report-' . $currentTimeInSeconds . '.xlsx';
-        Excel::store(new BackupListingsExport($listingData->exportData()), "/public/" . $fileName);
+        // $fileName = 'report-' . $currentTimeInSeconds . '.xlsx';
+        // Excel::store(new BackupListingsExport($listingData->exportData()), "/public/" . $fileName);
+
+        $fileName = 'report-' . $currentTimeInSeconds . '.csv';
+        Excel::store(
+            new BackupListingsExport($listingData->exportData()),
+            'public/' . $fileName,
+            null,
+            ExcelFormat::CSV
+        );
     }
 
     /**

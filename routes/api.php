@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\ListingController;
 use App\Http\Controllers\Api\ReviewController;
+use App\Http\Controllers\ChatGptController;
 
 /*
 |--------------------------------------------------------------------------
@@ -25,3 +26,5 @@ Route::get('/listings', [ListingController::class, 'index']);
 Route::get('/search-by-asins/{asin}', [ListingController::class, 'getListingData']);
 
 Route::post('save-review', [ReviewController::class, 'store']);
+
+Route::get('price-file/{id}/status', [ChatGptController::class, 'status']);

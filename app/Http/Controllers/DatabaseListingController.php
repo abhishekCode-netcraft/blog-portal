@@ -1112,7 +1112,7 @@ class DatabaseListingController extends Controller
      */
     public function articles()
     {
-        $articles = BackupListing::whereRaw('NOT JSON_CONTAINS(categories, \'"\Product"\')')
+        $articles = BackupListing::where('categories', 'NOT LIKE', '%Product%')
             ->paginate(150);
 
         return view('listing.articles', compact('articles'));

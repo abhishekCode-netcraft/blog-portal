@@ -144,6 +144,8 @@ return [
         // 'store' => 'redis',
     ],
 
+    'price_prompt' => env('PRICE_PROMPT'),
+
     /*
     |--------------------------------------------------------------------------
     | Autoloaded Service Providers

@@ -55,7 +55,7 @@ class WatermarkController extends Controller
         }
 
         $countIncrease = $lastNumber + 1;
-        $filename = $countIncrease . ".jpg";
+        $filename = $countIncrease . "." . request()->format;
         $localPath = storage_path('app/public/uploads/' . $filename);
 
         if ($request->hasFile('file')) {

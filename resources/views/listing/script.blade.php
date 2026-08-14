@@ -46,85 +46,85 @@
 
             $("#form").submit();
         });
-
+        
         @if (!request()->price_issue)
-            $('input').on('input', function() {
-                var inputValue = $(this).val();
-                var inputName = $(this).attr('name');
+        $('input').on('input', function() {
+            var inputValue = $(this).val();
+            var inputName = $(this).attr('name');
 
-                if (inputName == 'author_name' ||
-                    inputName == 'publication' ||
-                    inputName == 'edition') {
-                    var value = inputValue.replace(/,/g, '');
-                    $(this).val(value);
+            if (inputName == 'author_name' ||
+                inputName == 'publication' ||
+                inputName == 'edition') {
+                var value = inputValue.replace(/,/g, '');
+                $(this).val(value);
+            }
+
+            if (inputName == 'author_name' ||
+                inputName == 'title' ||
+                inputName == 'publication' ||
+                inputName == 'edition' ||
+                inputName == 'sku'
+            ) {
+                limit(this);
+            }
+
+            if (inputName == 'isbn_10' ||
+                inputName == 'isbn_13'
+            ) {
+                const validPattern = /^[a-zA-Z0-9\-]*$/; // Regex for allowed characters
+                const inputValue = $(this).val();
+
+                if (!validPattern.test(inputValue)) {
+                    // If the value doesn't match the pattern, remove invalid characters
+                    errorHandling(inputName, 'Only alphabets, numbers, and hyphens are allowed', false, $(this))
+                    $(this).val(inputValue.replace(/[^a-zA-Z0-9\-]/g, ''));
                 }
+            }
 
-                if (inputName == 'author_name' ||
-                    inputName == 'title' ||
-                    inputName == 'publication' ||
-                    inputName == 'edition' ||
-                    inputName == 'sku'
-                ) {
-                    limit(this);
-                }
+            if (inputName != 'images[]') {
+                requiredFields(inputValue, this);
+            }
 
-                if (inputName == 'isbn_10' ||
-                    inputName == 'isbn_13'
-                ) {
-                    const validPattern = /^[a-zA-Z0-9\-]*$/; // Regex for allowed characters
-                    const inputValue = $(this).val();
+            nameValidate(inputValue, this);
 
-                    if (!validPattern.test(inputValue)) {
-                        // If the value doesn't match the pattern, remove invalid characters
-                        errorHandling(inputName, 'Only alphabets, numbers, and hyphens are allowed', false, $(this))
-                        $(this).val(inputValue.replace(/[^a-zA-Z0-9\-]/g, ''));
-                    }
-                }
+            domainValidation(inputValue, this);
 
-                if (inputName != 'images[]') {
-                    requiredFields(inputValue, this);
-                }
+            if (inputName == 'title') {
+                minLimit(this);
+            }
 
-                nameValidate(inputValue, this);
+            if (inputName == 'discount' ||
+                inputName == 'mrp'
+            ) {
+                setSellingPrice();
+            }
 
-                domainValidation(inputValue, this);
+            if (inputName == 'selling_price') {
+                var sellingPrice = $(this).val();
+                var mrp = parseInt($("#mrp").val());
 
-                if (inputName == 'title') {
-                    minLimit(this);
-                }
+                $('#discount').val(Math.round(((mrp - sellingPrice) / mrp) * 100));
+            }
+        })
 
-                if (inputName == 'discount' ||
-                    inputName == 'mrp'
-                ) {
-                    setSellingPrice();
-                }
+        $('textarea').on('input', function() {
+            var textareaValue = $(this).val();
 
-                if (inputName == 'selling_price') {
-                    var sellingPrice = $(this).val();
-                    var mrp = parseInt($("#mrp").val());
+            requiredFields(textareaValue, this);
 
-                    $('#discount').val(Math.round(((mrp - sellingPrice) / mrp) * 100));
-                }
-            })
+            nameValidate(textareaValue, this);
 
-            $('textarea').on('input', function() {
-                var textareaValue = $(this).val();
+            domainValidation(textareaValue, this);
+        })
 
-                requiredFields(textareaValue, this);
-
-                nameValidate(textareaValue, this);
-
-                domainValidation(textareaValue, this);
-            })
-
-            $('#url').on('input', function() {
-                var url = $(this).val();
-                if (!url.includes('https://www.instamojo.com/EXAM360/')) {
-                    errorHandling('url', 'Please add instamojo link', false, this);
-                } else {
-                    errorHandling('url', '', true, this);
-                }
-            });
+        $('#url').on('input', function() {
+            var url = $(this).val();
+            if (!url.includes('https://www.instamojo.com/EXAM360/')) {
+                errorHandling('url', 'Please add instamojo link', false, this);
+            } else {
+                errorHandling('url', '', true, this);
+            }
+        });
         @endif
 
         $.ajax({
@@ -142,112 +142,136 @@
             var valid = true;
             var requiredvalid = true;
 
-            checkSpecificValue();
+            var valuesToCheck = ['Stk_o', 'stock__out', 'stock__onDemand', 'Stk_d']; // Replace with your target values
+            var selectedValues = $('.select2').val(); // Get selected values
 
-            checkCategoryLength(event);
+            if (selectedValues) { // Ensure selectedValues is not null
+                valuesToCheck.forEach(function(value) {
+                    if (selectedValues.includes(value)) {
+                        alert('This Labels are not accepted while update any listing. Value found: ' + value);
+                    }
+                });
+            } else {
+                console.log('No values selected.');
+            }
+
+            let totalLength = 0;
+            let selectedOptions = $('.select2').find('option:selected');
+
+            selectedOptions.each(function() {
+                totalLength += $(this).text().trim().length;
+            });
+
+            @if(!auth()->user()->hasRole('Super Admin') && !auth()->user()->hasRole('Super Management'))
+            if (totalLength < 170) {
+                event.preventDefault();
+                alert('You must select at least 170 characters in Category.');
+            }
+            @endif
 
             // Reset previous error messages
             $('.error-message').text('');
-
-            // Iterate over each input field with the class 'no-url-validation'
+            
             @if (!request()->price_issue)
-                $('input').each(function() {
-                    var inputValue = $(this).val();
-                    var urlRegex = /^(http|https):\/\/[^\s\[\]]*$/i;
+            // Iterate over each input field with the class 'no-url-validation'
+            $('input').each(function() {
+                var inputValue = $(this).val();
+                var urlRegex = /^(http|https):\/\/[^\s\[\]]*$/i;
 
-                    if ((urlRegex.test(inputValue) &&
-                            inputValue != 'http://' &&
-                            inputValue != 'url') ||
-                        (inputValue.includes('[') ||
-                            inputValue.includes(']'))
-                    ) {
-                        var fieldId = $(this).attr('name');
-                        if (fieldId != 'images[]' && fieldId != 'multipleImages[]' && fieldId != 'url' && fieldId != 'images') {
-                            $(this).css('border', '1px red solid');
-
-                            $('.' + fieldId).text('Please do not enter URLs.');
-                            valid = false;
-                        }
-                    }
-
-                    var notRequiredFields = [
-                        'price_issue', 
-                        'multipleImages[]', 
-                        'files', 
-                        'isbn_10', 
-                        'isbn_13', 
-                        'isbn_10', 
-                        'reading_age', 
-                        'country_origin', 
-                        'genre', 
-                        'manufacturer', 
-                        'importer', 
-                        'discount',
-                        'finalPrice'
-                    ];
-
-                    if (inputValue == '') {
-                        var fieldId = $(this).attr('name');
-                        if (fieldId && !notRequiredFields.includes(fieldId)) {
-                            $(this).css('border', '1px red solid');
-                            $('.' + fieldId).text('This field is required');
-                            console.log(fieldId);
-                            requiredvalid = false;
-                        }
-                    }
-                });
-
-                $('textarea').each(function() {
-                    var textareaValue = $(this).val();
-                    var urlRegex = /^(http|https):\/\/[^\s]*$/i;
-
-                    if (urlRegex.test(textareaValue)) {
-                        // Display error message
-                        var fieldId = $(this).attr('name');
-                        $('.' + fieldId).text('Please do not enter URLs.');
+                if ((urlRegex.test(inputValue) &&
+                        inputValue != 'http://' &&
+                        inputValue != 'url') ||
+                    (inputValue.includes('[') ||
+                        inputValue.includes(']'))
+                ) {
+                    var fieldId = $(this).attr('name');
+                    if (fieldId != 'images[]' && fieldId != 'multipleImages[]' && fieldId != 'url' && fieldId != 'images') {
                         $(this).css('border', '1px red solid');
 
+                        $('.' + fieldId).text('Please do not enter URLs.');
                         valid = false;
                     }
-
-                    if (textareaValue == '') {
-                        var fieldId = $(this).attr('name');
-                        if (fieldId) {
-                            $(this).css('border', '1px red solid');
-                            $('.' + fieldId).text('This field is required');
-                            console.log(fieldId);
-                            requiredvalid = false;
-                        }
-                    }
-                });
-
-                $('select').each(function() {
-                    var textareaValue = $(this).val();
-                    var notRequiredFields = ['book_name', 'pub_name'];
-
-                    if (textareaValue == '') {
-                        var fieldId = $(this).attr('name');
-                        if (fieldId && !notRequiredFields.includes(fieldId)) {
-                            $(this).css('border', '1px red solid');
-                            $('.' + fieldId).text('This field is required');
-                            console.log(fieldId);
-                            requiredvalid = false;
-                        }
-                    }
-                });
-           
-                var url = $('#url').val();
-                if (!url.includes('https://www.instamojo.com/EXAM360/')) {
-                    $('#url').css('border', '1px red solid');
-                    $('.url').text('Please add instamojo link');
-                    valid = false;
-                } else {
-                    $(this).css('border', '1px solid #e9edf4');
-                    $('.url').text('');
-                    valid = true;
                 }
-            @endif
 
+                var notRequiredFields = [
+                    'price_issue', 
+                    'multipleImages[]', 
+                    'files', 
+                    'isbn_10', 
+                    'isbn_13', 
+                    'isbn_10', 
+                    'reading_age', 
+                    'country_origin', 
+                    'genre', 
+                    'manufacturer', 
+                    'importer', 
+                    'discount',
+                    'finalPrice'
+                ];
+
+                if (inputValue == '') {
+                    var fieldId = $(this).attr('name');
+                    if (fieldId && !notRequiredFields.includes(fieldId)) {
+                        $(this).css('border', '1px red solid');
+                        $('.' + fieldId).text('This field is required');
+                        requiredvalid = false;
+                    }
+                }
+            });
+
+            $('textarea').each(function() {
+                var textareaValue = $(this).val();
+                var urlRegex = /^(http|https):\/\/[^\s]*$/i;
+
+                if (urlRegex.test(textareaValue)) {
+                    // Display error message
+                    var fieldId = $(this).attr('name');
+                    $('.' + fieldId).text('Please do not enter URLs.');
+                    $(this).css('border', '1px red solid');
+
+                    valid = false;
+                }
+
+                if (textareaValue == '') {
+                    var fieldId = $(this).attr('name');
+                    if (fieldId) {
+                        $(this).css('border', '1px red solid');
+                        $('.' + fieldId).text('This field is required');
+                        requiredvalid = false;
+                    }
+                }
+            });
+
+            $('select').each(function() {
+                var textareaValue = $(this).val();
+                var notRequiredFields = ['book_name', 'pub_name'];
+
+                if (textareaValue == '') {
+                    var fieldId = $(this).attr('name');
+                    if (fieldId && !notRequiredFields.includes(fieldId)) {
+                        $(this).css('border', '1px red solid');
+                        $('.' + fieldId).text('This field is required');
+                        requiredvalid = false;
+                    }
+                }
+            });
+
+            var url = $('#url').val();
+            if (!url.includes('https://www.instamojo.com/EXAM360/')) {
+                $('#url').css('border', '1px red solid');
+                $('.url').text('Please add instamojo link');
+                valid = false;
+            } else {
+                $(this).css('border', '1px solid #e9edf4');
+                $('.url').text('');
+                valid = true;
+            }
+            @endif
+            
+            console.log(valid);
+            console.log(requiredvalid);
+
+            // Prevent form submission if a URL is found
             if (!valid || !requiredvalid) {
                 event.preventDefault();
             }
@@ -264,6 +288,7 @@
 
         $("textarea").on('input', function() {
             calculateFields();
+            // checkFieldsAreChanged();
         });
 
         $("input").on('input', function() {
@@ -423,39 +448,6 @@
             }
         }
 
-        function checkSpecificValue()
-        {
-            var valuesToCheck = ['Stk_o', 'stock__out', 'stock__onDemand', 'Stk_d']; // Replace with your target values
-            var selectedValues = $('.select2').val(); // Get selected values
-
-            if (selectedValues) { // Ensure selectedValues is not null
-                valuesToCheck.forEach(function(value) {
-                    if (selectedValues.includes(value)) {
-                        alert('This Labels are not accepted while update any listing. Value found: ' + value);
-                    }
-                });
-            } else {
-                console.log('No values selected.');
-            }
-        }
-
-        function checkCategoryLength(event)
-        {
-            let totalLength = 0;
-            let selectedOptions = $('.select2').find('option:selected');
-
-            selectedOptions.each(function() {
-                totalLength += $(this).text().trim().length;
-            });
-
-            @if(!auth()->user()->hasRole('Super Admin') && !auth()->user()->hasRole('Super Management'))
-            if (totalLength < 170) {
-                event.preventDefault();
-                alert('You must select at least 170 characters in Category.');
-            }
-            @endif
-        }
-
         $('#desc').summernote({
             toolbar: [
                 ['font', ['bold', 'italic', 'underline']],
@@ -566,9 +558,10 @@
                 $status.html('<span style="color: white;">✖ Please enter a valid image URL.</span>');
             }
         }
+    // })
 
         $('#count').html("<strong>Label Selected : </strong>" + $('.select2').val().length);
-
+    
         $('.select2').change(function() {
             $('#count').html("<strong>Label Selected : </strong>" + $(this).val().length);
         });
@@ -601,6 +594,50 @@
         @if(isset($listing->product_id))
         checkFieldsAreChanged();
         @endif
+        
+        $('#generate_price').click(function() {
+            const title = $("#title").val();
+            if (!title) {
+                alert("Please Enter Book Name");
+                return;
+            }
+
+            const pricePrompt = @json(config('app.price_prompt'));
+            const msg = `${pricePrompt} "${title}"`;
+
+            $.ajax({
+                type: "POST",
+                url: "{{ route('getai.descriptionfetcher') }}",
+                headers: {
+                    'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
+                },
+                data: {
+                    product_info: msg,
+                },
+                beforeSend: function () {
+                    $('#generate_price .fa').removeClass('d-none');
+                    $('#generate_price .text').addClass('d-none');
+                },
+                success: function(result) {
+                    const match = result['content'].match(/Current Price:\s*₹(\d+),\s*Availability:\s*(.+)/);
+
+                    if (match) {
+                        const currentPrice = match[1];
+                        const availability = match[2];
+
+                        // $('#selling_price').val();
+                        $(".stock").html("<span class='mt-2' style='display: flex;justify-content: end;'>₹" + currentPrice + " | "+ availability + "</span>");
+                        $('#generate_price .fa').addClass('d-none');
+                        $('#generate_price .text').removeClass('d-none');
+                        // $('#availability').val(availability); // if you have this field
+                    } else {
+                        alert('Not able to Fetch: '+ result['content']);
+                        $('#generate_price .fa').addClass('d-none');
+                        $('#generate_price .text').removeClass('d-none');
+                    }
+                }
+            });
+        })
     });
     
     function copyLink() {
@@ -615,5 +652,8 @@
             $('#copylink').html('Copy');
         }, 500)
     }
-
+    
+    
+    
+    
 </script>

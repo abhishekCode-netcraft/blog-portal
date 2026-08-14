@@ -40,7 +40,7 @@ class ImageMakerController extends Controller
         $filePath1 = $basePath . $file;
         $filePath2 = $basePath . 'posts/' . $file;
         $filePath3 = storage_path('app/public/') . 'complaints/replies/' . $file;
-        $filePath4 = storage_path('app/public/') . 'complaints/files/' . $file;
+        $filePath4 = storage_path('app/public/') . 'complaints/attachments/' . $file;
         $filePath5 = storage_path('app/public/') . 'review-screenshots/' . $file;
 
         if (file_exists($filePath1)) {
@@ -54,11 +54,11 @@ class ImageMakerController extends Controller
         if (file_exists($filePath3)) {
             return response()->file($filePath3);
         }
-
+        
         if (file_exists($filePath4)) {
             return response()->file($filePath4);
         }
-
+        
         if (file_exists($filePath5)) {
             return response()->file($filePath5);
         }
@@ -114,26 +114,52 @@ class ImageMakerController extends Controller
             $filepath = explode('/', $path);
 
             foreach ($filepath as $name) {
-                if (strpos($name, '.jpg') !== false || strpos($name, '.png') !== false) {
-                    $files[$key]['name'] = $name;
-
+                $files[$key]['name'] = $name;
+                
+                $path = storage_path('app/public/uploads/'.$name);
+                $extension = pathinfo($path, PATHINFO_EXTENSION);
+                
+                if (file_exists($path) && $extension == 'webp') {
+                    // File size (bytes)
+                    $size = filesize($path);
+                
+                    // Human readable size
+                    $sizeKB = round($size / 1024, 2);
+                    $sizeMB = round($size / 1024 / 1024, 2);
+                
+                    // Last modified datetime
+                    $modified = date('Y-m-d H:i:s', filemtime($path));
+                
+                    // Image dimensions
+                    [$width, $height] = getimagesize($path);
+                    
+                    $files[$key]['datetime'] = $modified;
+                    $files[$key]['size'] = $size;
+                    $files[$key]['date_time'] = $filePath;
+                
+                    // echo "Size: {$size} bytes ({$sizeKB} KB)\n";
+                    // echo "Modified: {$modified}\n";
+                    // echo "Dimensions: {$width} x {$height}";
+                    // echo $extension;
+                } else {
                     $filePath = @exif_read_data(storage_path('/app/public/uploads/' . $name))['FileDateTime'];
                     $fileSize = @exif_read_data(storage_path('/app/public/uploads/' . $name))['FileSize'];
-
+    
                     $dateTime = Carbon::createFromTimestamp($filePath);
                     $files[$key]['datetime'] = $dateTime->toDateTimeString();
                     $files[$key]['size'] = $fileSize;
+                    $files[$key]['date_time'] = $filePath;
                 }
             }
         }
-
+        
         // Custom sorting function for descending order
         usort($files, function ($a, $b) {
             return strtotime($b['datetime']) - strtotime($a['datetime']);
         });
-
+        
         $files = $this->paginate($files, request()->count, request()->page);
-
+        
         return view('image-creation.image-gallery', compact('files'));
     }
 
@@ -150,9 +176,9 @@ class ImageMakerController extends Controller
     {
         $page = $page ?: (Paginator::resolveCurrentPage() ?: 1);
         $items = $items instanceof Collection ? $items : Collection::make($items);
-
+    
         $paginated = new LengthAwarePaginator($items->forPage($page, $perPage), $items->count(), $perPage, $page, $options);
-
+        
         // Append existing GET parameters to pagination links
         $paginated->appends(request()->query());
 
@@ -167,8 +193,9 @@ class ImageMakerController extends Controller
      */
     public function refreshURL()
     {
-        if (request()->session)
+        if (request()->session) {
             return session()->get(request()->session);
+        }
     }
 
     /**

@@ -590,11 +590,17 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'web']], function ()
     Route::post('/get/ai/descriptionfetcher', [ChatGptController::class, 'responseAidescriptionfetcher'])
         ->name('getai.descriptionfetcher');
 
-
     Route::post('/support/mail', [HomeController::class, 'supportMail'])
         ->name('support.mail');
 
+    Route::get('upload/price/file', [ChatGptController::class, 'uploadFile'])
+        ->name('upload.price.file');
 
+    Route::post('upload/price/file', [ChatGptController::class, 'generate'])
+        ->name('generate.price.file');
+
+    Route::delete('delete/price/log/{id}', [ChatGptController::class, 'destroy'])
+        ->name('delete.price.log');
     /**
      *  END
      */
@@ -673,8 +679,6 @@ Route::get('/assets/images/brand/{filename}', UserController::class)
 
 Route::get('', [HomeController::class, 'index'])
     ->name('home');
-
-
 
 Route::match(['get', 'post'], 'price/calculation', [UserController::class, 'priceCalculation'])
     ->name('price.calculation');

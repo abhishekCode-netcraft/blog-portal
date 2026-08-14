@@ -79,7 +79,7 @@ class CollageController extends Controller
 
         $countIncrease = $lastNumber + 1;
 
-        $filename = $countIncrease . '.jpg';
+        $filename = $countIncrease . "." . request()->format;
 
         $path = 'storage/uploads/' . $filename;
 

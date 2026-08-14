@@ -36,6 +36,7 @@
                             {{ __('Publication / Sub Category:') }}
                             
                             <div>
+                                @can('Marketplace -> Supplier Icon')
                                 <span
                                     id='dealer_name'
                                     data-bs-toggle="tooltip"
@@ -44,6 +45,7 @@
                                     style="cursor:pointer;color:blue;margin-left:5px;font-size:15px;">
                                     <i class="fa fa-industry" aria-hidden="true"></i>
                                 </span>
+                                @endcan
                                 
                                 <span
                                     id='other_limitation'
